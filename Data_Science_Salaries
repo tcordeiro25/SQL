@@ -1,0 +1,95 @@
+/* ensuring the dataset was imported correctly
+ 565 rows are returned*/
+
+SELECT *
+FROM casestudy.ds_salaries 
+;
+
+/* finding the distinct job title roles in data science
+49 distinct roles returned */
+
+SELECT distinct job_title
+FROM casestudy.ds_salaries
+; 
+
+/* Question 1: 
+Which job roles have entry level positions?
+18 distinct rows returned */
+
+SELECT distinct experience_level, job_title
+FROM casestudy.ds_salaries
+WHERE experience_level = "EN"
+;
+
+/* Question 2:
+Which roles have salaries > 100000 in the US?
+33 rows returned */
+
+SELECT distinct job_title, salary_in_usd, experience_level, employment_type
+FROM casestudy.ds_salaries
+WHERE salary_in_usd > 100000 AND employee_residence = "US"
+GROUP BY job_title
+;
+
+/* Question 3:
+What are the job roles lowest salary vs the highest salary in the US? 
+37 rows returned*/
+
+SELECT  distinct job_title, MIN(salary_in_usd) AS low_salary, MAX(salary_in_usd) AS high_salary, experience_level, employment_type
+FROM casestudy.ds_salaries
+WHERE employee_residence = "US"
+GROUP BY job_title
+ORDER BY low_salary ASC
+;
+
+/* Question 4:
+What is the average salary per job title in the US? */
+
+SELECT job_title, ROUND(AVG(salary_in_usd)) AS avg_salary
+FROM casestudy.ds_salaries
+WHERE employee_residence = "US"
+GROUP BY job_title
+ORDER BY avg_salary ASC
+;
+
+/* Question 5:
+What is the average salary per experience level? */
+
+SELECT CASE
+WHEN experience_level = "EN" THEN "Entry Level"
+WHEN experience_level = "MI" THEN "Mid Level"
+WHEN experience_level = "SE" THEN "Senior Level"
+WHEN experience_level = "EX" THEN "Executive Level"
+ELSE NULL 
+END AS experience_category, ROUND(AVG(salary_in_usd)) AS avg_salary
+FROM casestudy.ds_salaries
+WHERE employee_residence = "US"
+GROUP BY CASE 
+WHEN experience_level = "EN" THEN "Entry Level"
+WHEN experience_level = "MI" THEN "Mid Level"
+WHEN experience_level = "SE" THEN "Senior Level"
+WHEN experience_level = "EX" THEN "Executive Level"
+ELSE NULL 
+END
+ORDER BY avg_salary DESC
+;
+
+/* Question 6:
+Does the company size matter salary wise? (US based) */
+
+SELECT CASE
+WHEN company_size = "S" THEN "Small Company"
+WHEN company_size = "M" THEN "Medium Company"
+WHEN company_size = "L" THEN "Large Company"
+ELSE NULL
+END AS new_company_size,
+ROUND(MIN(salary_in_usd)) AS min_salary, ROUND(MAX(salary_in_usd)) AS max_salary
+FROM casestudy.ds_salaries
+WHERE employee_residence = "US"
+GROUP BY CASE
+WHEN company_size = "S" THEN "Small Company"
+WHEN company_size = "M" THEN "Medium Company"
+WHEN company_size = "L" THEN "Large Company"
+ELSE NULL
+END
+; 
