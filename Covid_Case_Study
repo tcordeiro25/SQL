@@ -1,0 +1,136 @@
+SELECT * 
+FROM covidstudy.coviddeaths
+WHERE continent > ''
+ORDER BY 3,4 
+;
+
+/* selecting data that I will be using */
+
+SELECT Location, date, total_cases, new_cases, total_deaths, population
+FROM covidstudy.coviddeaths
+WHERE continent > ''
+ORDER BY 1,2
+;
+
+/* looking at total cases vs total deaths
+shows likelihood of dying if you contract covid in the US */
+
+SELECT Location, date, total_cases, total_deaths, (total_deaths/total_cases)*100 AS death_percentage
+FROM covidstudy.coviddeaths
+WHERE location like '%states%'
+and continent > ''
+ORDER BY 1,2
+;
+
+/* lookin gat total cases vs population
+shows percentage of population that got covid in the US */
+
+SELECT Location, date, population, total_cases, (total_cases/population)*100 AS covid_population
+FROM covidstudy.coviddeaths
+WHERE location like '%states%'
+and continent > ''
+ORDER BY 1,2
+;
+
+/* looking at countries with highest infection rate compared to population */
+
+SELECT Location, population, MAX(total_cases) AS highestinfectioncount,  MAX((total_cases/population))*100 AS infected_population
+FROM covidstudy.coviddeaths
+WHERE continent > ''
+GROUP BY location, population
+ORDER BY infected_population desc
+;
+
+/* showing countries with highest death count per population */
+
+SELECT Location, MAX(cast(total_deaths AS unsigned)) AS totaldeathcount
+FROM covidstudy.coviddeaths
+WHERE continent > ''
+GROUP BY location
+ORDER BY totaldeathcount desc
+;
+
+/* showing continents with the highest death count per population */
+
+SELECT continent, MAX(cast(total_deaths AS unsigned)) AS totaldeathcount
+FROM covidstudy.coviddeaths
+WHERE continent > ''
+GROUP BY continent
+ORDER BY totaldeathcount desc
+;
+
+/* global numbers */
+
+SELECT SUM(new_cases) AS total_cases, SUM(new_deaths) AS total_deaths, SUM(new_deaths)/SUM(new_cases)*100 AS death_percent
+FROM covidstudy.coviddeaths
+WHERE continent > ''
+ORDER BY 1,2
+;
+
+
+/* joinging our two tables together */
+
+
+SELECT *
+FROM covidstudy.coviddeaths dea
+JOIN covidstudy.covidvaccinations vac
+	ON dea.location = vac.location
+    and dea.date = vac.date
+;
+
+/* looking at total population vs vaccinations */
+
+SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, 
+SUM(convert(vac.new_vaccinations, unsigned)) OVER (partition by dea.location order by dea.location, dea.date) AS rolling_people_vaccinated
+FROM covidstudy.coviddeaths dea
+JOIN covidstudy.covidvaccinations vac
+	ON dea.location = vac.location
+    and dea.date = vac.date
+WHERE dea.continent > ''
+ORDER BY 2,3
+;
+
+/* use CTE */
+
+WITH PopvsVac (continent, location, date, population, new_vaccinations, rolling_people_vaccinated)
+as
+(
+SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, 
+SUM(convert(vac.new_vaccinations, unsigned)) OVER (partition by dea.location order by dea.location, dea.date) AS rolling_people_vaccinated
+FROM covidstudy.coviddeaths dea
+JOIN covidstudy.covidvaccinations vac
+	ON dea.location = vac.location
+    and dea.date = vac.date
+WHERE dea.continent > ''
+)
+SELECT *, (rolling_people_vaccinated/population)*100 AS percent
+FROM PopvsVac
+;
+
+/* Temp table */
+
+drop table if exists percentpopulationvaccinated;
+
+create table percentpopulationvaccinated
+(
+continent varchar(255),
+location varchar(255),
+date datetime,
+population numeric,
+new_vaccinations numeric,
+rolling_people_vaccinated numeric
+)
+;
+insert ignore into percentpopulationvaccinated 
+SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, 
+SUM(convert(vac.new_vaccinations, unsigned)) OVER (partition by dea.location order by dea.location, dea.date) AS rolling_people_vaccinated
+FROM covidstudy.coviddeaths dea
+JOIN covidstudy.covidvaccinations vac
+	ON dea.location = vac.location
+    and dea.date = vac.date
+WHERE dea.continent > ''
+ORDER BY 2,3
+;
+SELECT *, (rolling_people_vaccinated/population)*100 AS percent
+FROM percentpopulationvaccinated
+;
