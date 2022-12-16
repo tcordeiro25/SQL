@@ -1,0 +1,46 @@
+## Here is a dataset called chinook, which represents a digital media store and includes tables for artists, albums, media tracks, invoices, and customers.
+
+
+--Show only the Customers from USA
+
+SELECT CustomerId, FirstName, LastName, Country
+FROM chinook.customers
+WHERE Country = "USA"
+
+-- Find the Invoices of customers who are from USA
+
+SELECT inv.InvoiceId, cus.CustomerId, cus.FirstName, cus.LastName, inv.InvoiceDate, inv.BillingCountry
+FROM chinook.invoices inv
+JOIN chinook.customers cus
+ON inv.CustomerId=cus.CustomerId
+WHERE inv.BillingCountry="USA"
+ORDER BY cus.CustomerId
+
+-- How many Invoices were there in 2009?
+
+SELECT COUNT(InvoiceId) AS total_invoices
+FROM chinook.invoices
+WHERE InvoiceDate LIKE "2009%"
+
+-- What are the total sales?
+
+SELECT SUM(UnitPrice)*Quantity AS total_sales
+FROM chinook.invoice_items
+
+-- Show the Employees who are Sales Agents.
+
+SELECT FirstName, LastName, Title
+FROM chinook.employees
+WHERE Title LIKE "Sales % Agent"
+
+-- Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+
+SELECT tr.Name, alb.Title AS Album, md.Name AS Media_type, gn.Name AS Genre
+FROM chinook.tracks  tr
+JOIN chinook.albums alb
+ON tr.AlbumId=alb.AlbumId
+JOIN chinook.media_types md
+ON tr.MediaTypeId=md.MediaTypeId
+JOIN chinook.genres gn
+ON tr.GenreId= gn.GenreId
+ORDER BY GENRE
