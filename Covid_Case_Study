@@ -1,3 +1,6 @@
+## Datasat downloaded from Kaggle
+## Query using Microsoft SQL Server
+
 SELECT * 
 FROM covidstudy.coviddeaths
 WHERE continent > ''
