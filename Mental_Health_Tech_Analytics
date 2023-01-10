@@ -7,6 +7,10 @@ SELECT SurveyID, COUNT(DISTINCT(UserID)) AS total_user_count
 FROM Answer 
 GROUP BY SurveyID
 
+-- quantify text information from question table
+SELECT QuestionText
+FROM Question
+
 -- query text information for Questionid
 SELECT * 
 FROM Question 
@@ -22,6 +26,7 @@ SELECT AnswerText, COUNT(AnswerText) AS total_count
 FROM Answer 
 WHERE QuestionID = 118 
 GROUP BY AnswerText
+
 
 -- use join to show question text related to the answer for questionid 30
 SELECT q.QuestionText, a.AnswerText, COUNT(a.AnswerText) AS total_answer_count
@@ -45,4 +50,23 @@ FROM Answer a
 JOIN Question q
 ON a.QuestionID=q.questionid
 WHERE a.SurveyID = "2016" AND a.QuestionID = 117
+GROUP BY a.AnswerText
+
+-- query total participants' count for questionid 7;
+-- "Have you ever sought treatment for a mental health disorder from a mental health professional?"
+SELECT AnswerText, COUNT(DISTINCT(UserID)) AS total_user_count
+FROM Answer
+WHERE QuestionID = 7
+GROUP BY AnswerText
+
+
+-- query total participants' count for questionid 12;
+-- "Would you bring up a mental health issue with a potential employer in an interview?"
+SELECT s.SurveyID, q.QuestionText, a.AnswerText, COUNT(DISTINCT(a.UserID)) AS total_user_count
+FROM Answer a
+JOIN Question q
+ON a.QuestionID=q.questionid
+JOIN Survey s
+ON a.SurveyID=s.surveyID
+WHERE a.QuestionID = 12
 GROUP BY a.AnswerText
