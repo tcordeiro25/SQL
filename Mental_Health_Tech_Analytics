@@ -70,3 +70,14 @@ JOIN Survey s
 ON a.SurveyID=s.surveyID
 WHERE a.QuestionID = 12
 GROUP BY a.AnswerText
+
+-- query text information for ID #16
+SELECT QuestionText
+FROM Question
+WHERE QuestionID = 16
+
+--query all answers for specified Questionid 16
+SELECT AnswerText, COUNT(AnswerText) AS total_count
+FROM Answer
+WHERE QuestionID = 16
+GROUP BY AnswerText
