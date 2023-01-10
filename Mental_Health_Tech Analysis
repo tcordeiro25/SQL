@@ -1,0 +1,48 @@
+## This dataset was found on Kaggle.com for Mental Health in the tech industry
+## Query using SQLITEStudio
+
+
+--query number of participants for each survey year
+SELECT SurveyID, COUNT(DISTINCT(UserID)) AS total_user_count
+FROM Answer 
+GROUP BY SurveyID
+
+-- query text information for Questionid
+SELECT * 
+FROM Question 
+WHERE QuestionID = 118
+
+-- query all answers for specified Questionid
+SELECT AnswerText 
+FROM Answer 
+WHERE QuestionID = 118
+
+-- query distribution of answer given Questionid
+SELECT AnswerText, COUNT(AnswerText) AS total_count
+FROM Answer 
+WHERE QuestionID = 118 
+GROUP BY AnswerText
+
+-- use join to show question text related to the answer for questionid 30
+SELECT q.QuestionText, a.AnswerText, COUNT(a.AnswerText) AS total_answer_count
+FROM Answer a
+JOIN Question q
+ON a.QuestionID=q.questionid
+WHERE a.QuestionID = 30
+GROUP BY AnswerText
+
+-- query questionid from 2016 survey based on work position
+SELECT a.SurveyID, q.QuestionText, a.AnswerText
+FROM Answer a
+JOIN Question q
+ON a.QuestionID=q.questionid
+WHERE a.SurveyID = "2016" AND a.QuestionID = 117
+ORDER BY a.AnswerText
+
+-- query count of each work position based on 2016 survey question 
+SELECT q.QuestionText, a.AnswerText, COUNT(a.AnswerText) AS total_count
+FROM Answer a
+JOIN Question q
+ON a.QuestionID=q.questionid
+WHERE a.SurveyID = "2016" AND a.QuestionID = 117
+GROUP BY a.AnswerText
