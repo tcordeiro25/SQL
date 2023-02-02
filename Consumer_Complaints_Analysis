@@ -1,4 +1,4 @@
-## This dataset was downloaded from Kaggle.com on US consumer complaints of finances from 2011-2013.
+## This dataset was downloaded from Kaggle.com on US consumer complaints of finances from 2011-2016.
 
 SELECT complaint_id, product, issue, state, date_received
 FROM consumer_complaints
