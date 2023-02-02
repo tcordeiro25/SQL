@@ -1,0 +1,46 @@
+## This dataset was downloaded from Kaggle.com on US consumer complaints of finances from 2011-2013.
+
+SELECT complaint_id, product, issue, state, date_received
+FROM consumer_complaints
+ORDER BY complaint_id
+
+-- 1. What are the top 10 products with the most complaints?
+
+SELECT product, COUNT(product) AS total_count 
+FROM consumer_complaints
+GROUP BY product
+ORDER BY total_count desc
+LIMIT 10
+
+-- 2. What are the top 10 issues with the most complaints?
+
+SELECT product, issue, COUNT(issue) AS total_count 
+FROM consumer_complaints
+GROUP BY issue
+ORDER BY total_count desc
+LIMIT 10
+
+-- 3. Which states have the most complaints?
+
+SELECT product, issue, state, COUNT(product) AS total_count
+FROM consumer_complaints
+WHERE state IS NOT NULL
+GROUP BY state
+ORDER BY total_count desc
+
+-- 4. How many complaints were received in 2012?
+
+SELECT COUNT(product) AS total_count
+FROM consumer_complaints
+WHERE date_received LIKE '%2012'
+
+-- 5. How many complaints were received in 2013?
+
+SELECT COUNT(product) AS total_count
+FROM consumer_complaints
+WHERE date_received LIKE '%2013'
+
+-- 6. How many complaints total?
+
+SELECT COUNT(complaint_id)
+FROM consumer_complaints
