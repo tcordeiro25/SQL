@@ -30,7 +30,7 @@ GROUP BY state
 ORDER BY total_count desc
 
 
--- 4. What were the total complaints for each year?
+-- 4. What were the total amount of issues for each year?
 
 SELECT COUNT(issue) AS total_count,
 CASE
