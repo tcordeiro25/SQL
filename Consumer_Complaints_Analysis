@@ -23,7 +23,7 @@ LIMIT 10
 
 -- 3. Which states have the most complaints?
 
-SELECT product, issue, state, COUNT(product) AS total_count
+SELECT state, COUNT(product) AS total_count
 FROM consumer_complaints
 WHERE state IS NOT NULL
 GROUP BY state
