@@ -43,3 +43,12 @@ CASE
 END AS Year
 FROM consumer_complaints
 GROUP BY Year
+
+
+-- 5. List the top 10 companies with the most complaints.
+
+SELECT product, issue, company, COUNT(company) AS total_count
+FROM consumer_complaints
+GROUP BY company
+ORDER BY total_count desc
+LIMIT 10
