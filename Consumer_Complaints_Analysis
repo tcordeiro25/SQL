@@ -2,7 +2,8 @@
 
 SELECT complaint_id, product, issue, state, date_received
 FROM consumer_complaints
-ORDER BY complaint_id
+ORDER BY 1,2
+
 
 -- 1. What are the top 10 products with the most complaints?
 
@@ -28,19 +29,17 @@ WHERE state IS NOT NULL
 GROUP BY state
 ORDER BY total_count desc
 
--- 4. How many complaints were received in 2012?
 
-SELECT COUNT(product) AS total_count
+-- 4. What were the total complaints for each year?
+
+SELECT COUNT(issue) AS total_count,
+CASE
+    WHEN date_received LIKE '%2011' THEN '2011'
+    WHEN date_received LIKE '%2012' THEN '2012'
+    WHEN date_received LIKE '%2013' THEN '2013'
+    WHEN date_received LIKE '%2014' THEN '2014'
+    WHEN date_received LIKE '%2015' THEN '2015'
+    WHEN date_received LIKE '%2016' THEN '2016'
+END AS Year
 FROM consumer_complaints
-WHERE date_received LIKE '%2012'
-
--- 5. How many complaints were received in 2013?
-
-SELECT COUNT(product) AS total_count
-FROM consumer_complaints
-WHERE date_received LIKE '%2013'
-
--- 6. How many complaints total?
-
-SELECT COUNT(complaint_id)
-FROM consumer_complaints
+GROUP BY Year
