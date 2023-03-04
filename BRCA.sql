@@ -1,3 +1,8 @@
+########## This datset is from Kaggle.com, in regards to Breast Cancer ('Real Breast Cancer Data'). I used MSSQL Server to query questions. #########
+
+
+
+
 SELECT *
 FROM BRCA
 
