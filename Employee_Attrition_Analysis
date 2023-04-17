@@ -1,0 +1,80 @@
+##### This dataset is a fictional dataset from Kaggle.com titled "IBM HR Analytics Employee Attrition & Performance" ######
+
+
+SELECT *
+FROM EmployeeAttrition
+
+
+
+/* count the total number of employees in the dataset, and grouped them by attrition status */
+
+SELECT Attrition, COUNT(*) AS total_employees
+FROM EmployeeAttrition
+GROUP BY Attrition
+
+/* calculate the average monthly income by job role */
+
+ALTER TABLE EmployeeAttrition /* altering MonthlyIncome column to INT */
+ALTER COLUMN MonthlyIncome INT
+
+SELECT JobRole, AVG(MonthlyIncome) AS avg_monthly_income
+FROM EmployeeAttrition
+GROUP BY JobRole
+
+
+/* indentify the top 10 employees with the highest total working years */
+
+SELECT TOP 10 EmployeeNumber,TotalWorkingYears
+FROM EmployeeAttrition
+ORDER BY TotalWorkingYears DESC
+
+
+/* calculate the percentage of employees who have left the company */
+
+SELECT COUNT(*) AS total_employees,
+COUNT(CASE WHEN attrition = 'Yes' THEN 1 END) AS total_attritions,
+(COUNT(CASE WHEN attrition = 'Yes' THEN 1 END) * 100.0) / COUNT(*) AS attrition_rate
+FROM EmployeeAttrition
+
+
+
+/* segment the data by department and calculate the average job satisfaction and monthly income for each department */
+
+SELECT department, AVG(jobsatisfaction) AS avg_job_satisfaction, AVG(monthlyincome) AS avg_monthly_income
+FROM EmployeeAttrition
+GROUP BY department
+
+
+/* Identify the job roles with the highest average monthly income, and the corresponding number of employees in each role */
+
+SELECT jobrole, COUNT(*) AS num_employees, AVG(monthlyincome) AS avg_monthly_income
+FROM EmployeeAttrition
+GROUP BY jobrole
+ORDER BY avg_monthly_income DESC
+
+
+/* Calculate the average job satisfaction score for employees who have and have not been promoted */
+
+SELECT YearsSinceLastPromotion, AVG(jobsatisfaction) AS avg_job_satisfaction
+FROM EmployeeAttrition
+GROUP BY YearsSinceLastPromotion
+
+/* Identify the employees with the highest and lowest job satisfaction scores */
+
+SELECT employeenumber, department, jobsatisfaction
+FROM EmployeeAttrition
+WHERE jobsatisfaction = (SELECT MAX(jobsatisfaction) FROM EmployeeAttrition)
+   OR jobsatisfaction = (SELECT MIN(jobsatisfaction) FROM EmployeeAttrition)
+
+
+/* Calculate the average monthly income and number of employees in each age range: */
+
+SELECT FLOOR(age / 10) * 10 AS age_range, COUNT(*) AS num_employees, AVG(monthlyincome) AS avg_monthly_income
+FROM EmployeeAttrition
+GROUP BY FLOOR(age / 10) * 10
+
+/* indentify the departments and their travel history to the average income they earn */
+
+SELECT businesstravel, department, AVG(monthlyincome) AS avg_monthly_income, AVG(jobsatisfaction) AS avg_job_satisfaction
+FROM EmployeeAttrition
+GROUP BY businesstravel, department
