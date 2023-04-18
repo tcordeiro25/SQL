@@ -69,9 +69,27 @@ WHERE jobsatisfaction = (SELECT MAX(jobsatisfaction) FROM EmployeeAttrition)
 
 /* Calculate the average monthly income and number of employees in each age range: */
 
-SELECT FLOOR(age / 10) * 10 AS age_range, COUNT(*) AS num_employees, AVG(monthlyincome) AS avg_monthly_income
+SELECT 
+    CASE 
+        WHEN age BETWEEN 18 AND 24 THEN '18-24'
+        WHEN age BETWEEN 25 AND 34 THEN '25-34'
+        WHEN age BETWEEN 35 AND 44 THEN '35-44'
+        WHEN age BETWEEN 45 AND 54 THEN '45-54'
+        WHEN age BETWEEN 55 AND 64 THEN '55-64'
+        ELSE '65+' 
+    END AS age_range,
+    AVG(monthlyincome) AS avg_monthly_income
 FROM EmployeeAttrition
-GROUP BY FLOOR(age / 10) * 10
+GROUP BY 
+    CASE 
+        WHEN age BETWEEN 18 AND 24 THEN '18-24'
+        WHEN age BETWEEN 25 AND 34 THEN '25-34'
+        WHEN age BETWEEN 35 AND 44 THEN '35-44'
+        WHEN age BETWEEN 45 AND 54 THEN '45-54'
+        WHEN age BETWEEN 55 AND 64 THEN '55-64'
+        ELSE '65+' 
+    END
+
 
 /* indentify the departments and their travel history to the average income they earn */
 
