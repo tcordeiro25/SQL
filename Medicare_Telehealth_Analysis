@@ -1,0 +1,68 @@
+## This dataset is from data.cms.gov called Medicare Telehealth Trends ##
+
+
+select *
+from TMEDTREND_PUBLIC_230523; 
+
+
+
+-- 1. Find the total number of beneficiaries enrolled in Medicare Part B for each year and quarter
+
+SELECT Year, Quarter, SUM(CAST(Total_PartB_Enrl AS INT)) AS Total_Enrollment -- I used cast because total_partb_enrol is a varchar and I need it to be int to use the sum function
+FROM TMEDTREND_PUBLIC_230523
+GROUP BY Year, Quarter
+ORDER BY Year, Quarter;
+
+-- 2. What are the top 5 states with the highest number of telehealth eligible users in a specific year?
+
+SELECT TOP 5 Year, Bene_Geo_Desc, SUM(CAST(Total_Bene_TH_Elig AS INT)) AS Total_Telehealth_Eligible_Users
+FROM TMEDTREND_PUBLIC_230523
+WHERE Year = '2022' AND Bene_Geo_Desc != 'National' -- I used != for national because it is not a state
+GROUP BY Year, Bene_Geo_Desc
+ORDER BY Total_Telehealth_Eligible_Users DESC;
+
+
+--3. What is the percentage of Medicare users with a telehealth service for each year and quarter?
+
+SELECT Year, Quarter, ROUND(100.0 * SUM(CAST(Total_Bene_Telehealth AS INT)) / SUM(CAST(Total_Bene_TH_Elig AS INT)), 2) AS Percentage_Telehealth_Users
+FROM TMEDTREND_PUBLIC_230523
+GROUP BY Year, Quarter
+ORDER BY Year, Quarter;
+
+--4. What is the total number of telehealth visits for each beneficiary Medicare entitlement status?
+
+SELECT Bene_Mdcr_Entlmt_Stus, SUM(CAST(Total_Bene_Telehealth AS INT)) AS Total_Telehealth_Visits
+FROM TMEDTREND_PUBLIC_230523
+WHERE Bene_Mdcr_Entlmt_Stus != 'All'
+GROUP BY Bene_Mdcr_Entlmt_Stus
+ORDER BY Total_Telehealth_Visits DESC;
+
+
+--5. What are the top 5 beneficiary age groups with the highest telehealth usage in a specific year?
+
+SELECT Year, Bene_Age_Desc, SUM(CAST(Total_Bene_Telehealth AS INT)) AS Total_Telehealth_Visits
+FROM TMEDTREND_PUBLIC_230523
+WHERE Year = '2022' AND Bene_Age_Desc != 'All'
+GROUP BY Year, Bene_Age_Desc
+ORDER BY Total_Telehealth_Visits DESC;
+
+-- 6. What are the top 5 beneficiary race/ethnicity categories with the highest percentage of telehealth users in a specific year?
+
+SELECT Year, Bene_Race_Desc, ROUND(100.0 * SUM(CAST(Total_Bene_Telehealth AS INT)) / SUM(CAST(Total_Bene_TH_Elig AS INT)), 2) AS Percentage_Telehealth_Users
+FROM TMEDTREND_PUBLIC_230523
+WHERE Year = '2022'
+      AND ISNUMERIC(Total_Bene_Telehealth) = 1 -- used 'isnumeric' to filter out rows where the Total_Bene_Telehealth and Total_Bene_TH_Elig columns contain non-numeric values.
+      AND ISNUMERIC(Total_Bene_TH_Elig) = 1
+	  AND Bene_Race_Desc != 'All'
+GROUP BY Year, Bene_Race_Desc
+ORDER BY Percentage_Telehealth_Users DESC;
+
+
+7. --What is the trend of total telehealth users and total telehealth eligible users over the years?
+
+SELECT Year, SUM(TRY_CAST(Total_Bene_Telehealth AS BIGINT)) AS Total_Telehealth_Users, -- used try_cast to convert varchar into int without an error and used bigint so the arth.overflow doesntt occur
+             SUM(TRY_CAST(Total_Bene_TH_Elig AS BIGINT)) AS Total_Telehealth_Eligible_Users
+FROM TMEDTREND_PUBLIC_230523
+WHERE ISNUMERIC(Total_Bene_Telehealth) = 1 AND ISNUMERIC(Total_Bene_TH_Elig) = 1
+GROUP BY Year
+ORDER BY Year;
